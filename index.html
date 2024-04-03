@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>order links </title>
+</head>
+<body>
+  <div id="linkscontainer"></div>
+  <script>
+   const jsonData = {
+      "mvPurchaseOrders": [
+        {
+          "PurchaseOrderId": 90,
+          "PurchaseOrderTypeId": 4,
+          "PurchaseOrderTypeAbbreviation": "PO",
+          "PurchaseOrderNo": "3",
+          "PurchaseOrderAddress": "One Microsoft Way, Redmond, WA 98052-7329, United States",
+          "PurchaseOrderContactPerson": "Puneet Dhal",
+          "PurchaseOrderStatus": "Verified",
+          "PurchaseOrderDetails": [
+            {
+              "PurchaseOrderRowProductSKU": "PRODUCT_6",
+              "PurchaseOrderRowQuantity": 12,
+              "PurchaseOrderRowUnitPriceWithoutTaxOrDiscount": 35,
+              "PurchaseOrderRowTotalAmount": 420
+            },
+            {
+              "PurchaseOrderRowProductSKU": "PRODUCT_8",
+              "PurchaseOrderRowQuantity": 8,
+              "PurchaseOrderRowUnitPriceWithoutTaxOrDiscount": 164,
+              "PurchaseOrderRowTotalAmount": 1312
+            }
+          ]
+        },
+        {
+          "PurchaseOrderId": 89,
+          "PurchaseOrderTypeId": 4,
+          "PurchaseOrderTypeAbbreviation": "PO",
+          "PurchaseOrderNo": "2",
+          "PurchaseOrderAddress": "410 Terry Ave. North Seattle, WA, 98109-5210, United States",
+          "PurchaseOrderContactPerson": "Chris A.",
+          "PurchaseOrderStatus": "Verified",
+          "PurchaseOrderDetails": [
+            {
+              "PurchaseOrderRowProductSKU": "PRODUCT_2",
+              "PurchaseOrderRowQuantity": 12,
+              "PurchaseOrderRowUnitPriceWithoutTaxOrDiscount": 170,
+              "PurchaseOrderRowTotalAmount": 2040
+            },
+            {
+              "PurchaseOrderRowProductSKU": "PRODUCT_6",
+              "PurchaseOrderRowQuantity": 4,
+              "PurchaseOrderRowUnitPriceWithoutTaxOrDiscount": 50,
+              "PurchaseOrderRowTotalAmount": 200
+            }
+          ]
+        },
+        {
+          "PurchaseOrderId": 88,
+          "PurchaseOrderTypeId": 4,
+          "PurchaseOrderTypeAbbreviation": "PO",
+          "PurchaseOrderNo": "1",
+          "PurchaseOrderAddress": "410 Terry Ave. North Seattle, WA, 98109-5210, United States",
+          "PurchaseOrderContactPerson": "Babis",
+          "PurchaseOrderStatus": "Pending",
+          "PurchaseOrderDetails": [
+            {
+              "PurchaseOrderRowProductSKU": "PRODUCT_1",
+              "PurchaseOrderRowQuantity": 10,
+              "PurchaseOrderRowUnitPriceWithoutTaxOrDiscount": 100,
+              "PurchaseOrderRowTotalAmount": 1000
+            },
+            {
+              "PurchaseOrderRowProductSKU": "PRODUCT_2",
+              "PurchaseOrderRowQuantity": 5,
+              "PurchaseOrderRowUnitPriceWithoutTaxOrDiscount": 50,
+              "PurchaseOrderRowTotalAmount": 250
+            },
+            {
+              "PurchaseOrderRowProductSKU": "PRODUCT_3",
+              "PurchaseOrderRowQuantity": 30,
+              "PurchaseOrderRowUnitPriceWithoutTaxOrDiscount": 2,
+              "PurchaseOrderRowTotalAmount": 60
+            }
+          ]
+        }
+      ]
+    };
+
+// Function to generate list items and append them to the container
+function generateOrderList(data) {
+  const container = document.getElementById('linkscontainer');
+
+  // Loop through each order item
+  data.forEach(item => {
+    // Create list item
+    const listItem = document.createElement('li');
+    
+    // Set list item text
+    listItem.textContent = `${item.PurchaseOrderTypeAbbreviation} - ${item.PurchaseOrderNo}`;
+    
+    // Append list item to the container
+    container.appendChild(listItem);
+
+    // Add click event listener to each order item
+    listItem.addEventListener('click', () => {
+      // Call function to display order details popup
+      displayOrderDetails(item);
+    });
+  });
+}
+
+// Call the function with the order data
+generateOrderList(jsonData.mvPurchaseOrders);
+
+function displayOrderDetails(order){
+  //create popup container 
+  const popup = document.createElement('div');
+  popup.classList.add('popup');
+
+
+  //create a close button 
+  const closeButton = document.createElement('button');
+  closeButton.textContent=' Close';
+  closeButton.addEventListener('click',()=> {
+    popup.remove();
+  });
+
+
+  //create table for order details 
+  const table= document.createElement('table');
+  const headerRow=table.insertRow();
+  const headers=['Product SKU', 'Quantity Ordered', 'Unit Price', 'Total Amount'];
+  headers.forEach(headerText => {
+    const header = document.createElement('th');
+    header.textContent = headerText;
+    headerRow.appendChild(header);
+});
+// Add order details to table
+order.PurchaseOrderDetails.forEach(detail => {
+    const row = table.insertRow();
+    const values = [
+      detail.PurchaseOrderRowProductSKU,
+      detail.PurchaseOrderRowQuantity,
+      detail.PurchaseOrderRowUnitPriceWithoutTaxOrDiscount,
+      detail.PurchaseOrderRowTotalAmount
+    ];
+    values.forEach(value => {
+      const cell = row.insertCell();
+      cell.textContent = value;
+    });
+  })
+
+  // Add additional order information to popup
+  const infoParagraphs = document.createElement('div');
+  infoParagraphs.innerHTML = `
+    <p><strong>Address:</strong> ${order.PurchaseOrderAddress}</p>
+    <p><strong>Contact Person:</strong> ${order.PurchaseOrderContactPerson}</p>
+    <p><strong>Status:</strong> ${order.PurchaseOrderStatus}</p>
+  `;
+
+   // Append elements to popup
+   popup.appendChild(infoParagraphs);
+  popup.appendChild(table);
+  popup.appendChild(closeButton);
+
+  // Append popup to body
+  document.body.appendChild(popup);
+}
+
+</script>
+</body>
+</html>
